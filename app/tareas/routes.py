@@ -139,9 +139,12 @@ def editar(id):
 @bp_tarea.route("/delete/<int:id>")
 def eliminar(id):
     item = Tarea.query.get(id)
+    
+    curso_id = item.modulo.curso_id
+
     db.session.delete(item)
     db.session.commit()
-    return redirect(url_for("curso.detalle", id=item.modulo.curso_id))
+    return redirect(url_for("curso.detalle", id=curso_id))
 
 
 @bp_tarea.route("/detalle/<int:id>")

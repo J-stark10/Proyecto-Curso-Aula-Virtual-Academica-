@@ -40,14 +40,14 @@ def crear(modulo_id):
 
         if tipo == "pdf":
             archivo_pdf = request.files.get("archivo_pdf")
-            ruta_pdf = guardar_archivo(archivo_pdf, "recursos/pdf")
+            ruta_pdf = guardar_archivo(archivo_pdf, "recursos")
             if not ruta_pdf:
                 flash("Debes subir un archivo PDF.", "danger")
                 return redirect(url_for("recurso.crear", modulo_id=modulo_id))
 
         elif tipo == "video":
             archivo_video = request.files.get("archivo_video")
-            ruta_video = guardar_archivo(archivo_video, "recursos/video")
+            ruta_video = guardar_archivo(archivo_video, "recursos")
             if not ruta_video:
                 flash("Debes subir un archivo de video.", "danger")
                 return redirect(url_for("recurso.crear", modulo_id=modulo_id))
@@ -96,12 +96,12 @@ def editar(id):
         # Reemplazo opcional de archivo según el tipo de recurso
         if item.tipo == "pdf":
             archivo_pdf = request.files.get("archivo_pdf")
-            nueva_ruta = guardar_archivo(archivo_pdf, "recursos/pdf")
+            nueva_ruta = guardar_archivo(archivo_pdf, "recursos")
             if nueva_ruta:
                 item.archivo_pdf = nueva_ruta
         elif item.tipo == "video":
             archivo_video = request.files.get("archivo_video")
-            nueva_ruta = guardar_archivo(archivo_video, "recursos/video")
+            nueva_ruta = guardar_archivo(archivo_video, "recursos")
             if nueva_ruta:
                 item.archivo_video = nueva_ruta
         elif item.tipo == "enlace":
@@ -119,9 +119,12 @@ def editar(id):
 @bp_recurso.route("/delete/<int:id>")
 def eliminar(id):
     item = Recurso.query.get(id)
+
+    curso_id = item.modulo.curso_id
+
     db.session.delete(item)
     db.session.commit()
-    return redirect(url_for("curso.detalle", id=item.modulo.curso_id))
+    return redirect(url_for("curso.detalle", id=curso_id))
 
 
 @bp_recurso.route("/descargar/<path:ruta_relativa>")

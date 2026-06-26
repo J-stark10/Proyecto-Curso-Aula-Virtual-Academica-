@@ -107,27 +107,27 @@ with app.app_context():
     # ─── CURSOS ────────────────────────────────────────────────────────
     print("Creando cursos...")
     curso_mate = Curso(
-        nombre="Matemáticas - 4to 'A' Secundaria",
+        nombre="Matemáticas - 4to A",
         descripcion="Álgebra elemental, ecuaciones lineales, funciones cuadráticas y geometría básica.",
         categoria_id=cat_exactas.id, docente_id=profe_rosa.id,
     )
     curso_fisica = Curso(
-        nombre="Física - 5to 'A' Secundaria",
+        nombre="Física - 5to A",
         descripcion="Cinemática, dinámica, leyes de Newton, trabajo y energía.",
         categoria_id=cat_exactas.id, docente_id=profe_rosa.id,
     )
     curso_lenguaje = Curso(
-        nombre="Lenguaje - 3ro 'A' Secundaria",
+        nombre="Lenguaje - 3ro A",
         descripcion="Gramática normativa, redacción de textos, análisis literario y ortografía.",
         categoria_id=cat_humanidades.id, docente_id=profe_marcelo.id,
     )
     curso_bio = Curso(
-        nombre="Biología - 4to 'A' Secundaria",
+        nombre="Biología - 4to A",
         descripcion="Biología celular, genética mendeliana, ecosistemas y biodiversidad boliviana.",
         categoria_id=cat_naturales.id, docente_id=profe_marcelo.id,
     )
     curso_ingles = Curso(
-        nombre="Inglés - 3ro 'A' Secundaria",
+        nombre="Inglés - 3ro A",
         descripcion="Gramática básica, vocabulario esencial, reading comprehension y conversación elemental.",
         categoria_id=cat_idiomas.id, docente_id=profe_juana.id,
     )
