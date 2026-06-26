@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ item.titulo }} — Tarea{% endblock %}
+{% block title %}{{ item.titulo }} - Tarea{% endblock %}
 {% block content %}
 {% set curso = item.modulo.curso %}
 {% set es_gestor = current_user.rol == 'admin' or (current_user.rol == 'docente' and curso.docente_id == current_user.id) %}

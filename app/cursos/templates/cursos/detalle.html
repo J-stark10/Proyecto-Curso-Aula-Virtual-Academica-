@@ -88,26 +88,31 @@
             <div class="p-6 space-y-3">
                 <!-- Recursos -->
                 {% for r in modulo.recursos %}
-                <div class="flex items-center justify-between bg-gray-900/30 rounded-lg px-4 py-3">
-                    <div class="flex items-center gap-3">
-                        <span class="p-1.5 rounded-md bg-brand-500/10 text-brand-400 text-xs font-bold uppercase">{{ r.tipo }}</span>
-                        <span class="text-gray-200 font-medium">{{ r.titulo }}</span>
+                <div class="bg-gray-900/30 rounded-lg px-4 py-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="p-1.5 rounded-md bg-brand-500/10 text-brand-400 text-xs font-bold uppercase">{{ r.tipo }}</span>
+                            <span class="text-gray-200 font-medium">{{ r.titulo }}</span>
+                        </div>
+                        <div class="flex items-center gap-3 text-xs">
+                            {% if r.tipo == 'enlace' %}
+                            <a href="{{ r.url_enlace }}" target="_blank" class="text-brand-400 hover:text-brand-300 font-semibold">Abrir enlace</a>
+                            {% elif r.tipo == 'pdf' and r.archivo_pdf %}
+                            <a href="{{ url_for('recurso.descargar', ruta_relativa=r.archivo_pdf) }}" class="text-brand-400 hover:text-brand-300 font-semibold">Descargar PDF</a>
+                            {% endif %}
+                            {% if es_gestor %}
+                            <a href="{{ url_for('recurso.editar', id=r.id) }}" class="text-gray-400 hover:text-gray-200">Editar</a>
+                            <a href="{{ url_for('recurso.eliminar', id=r.id) }}"
+                               onclick="return confirm('¿Eliminar este recurso?');"
+                               class="text-red-400 hover:text-red-300">Eliminar</a>
+                            {% endif %}
+                        </div>
                     </div>
-                    <div class="flex items-center gap-3 text-xs">
-                        {% if r.tipo == 'enlace' %}
-                        <a href="{{ r.url_enlace }}" target="_blank" class="text-brand-400 hover:text-brand-300 font-semibold">Abrir enlace</a>
-                        {% elif r.tipo == 'pdf' and r.archivo_pdf %}
-                        <a href="{{ url_for('recurso.descargar', ruta_relativa=r.archivo_pdf) }}" class="text-brand-400 hover:text-brand-300 font-semibold">Descargar PDF</a>
-                        {% elif r.tipo == 'video' and r.archivo_video %}
-                        <a href="{{ url_for('recurso.descargar', ruta_relativa=r.archivo_video) }}" class="text-brand-400 hover:text-brand-300 font-semibold">Ver video</a>
-                        {% endif %}
-                        {% if es_gestor %}
-                        <a href="{{ url_for('recurso.editar', id=r.id) }}" class="text-gray-400 hover:text-gray-200">Editar</a>
-                        <a href="{{ url_for('recurso.eliminar', id=r.id) }}"
-                           onclick="return confirm('¿Eliminar este recurso?');"
-                           class="text-red-400 hover:text-red-300">Eliminar</a>
-                        {% endif %}
-                    </div>
+                    {% if r.tipo == 'video' and r.archivo_video %}
+                    <video controls class="w-full rounded-lg mt-3 max-h-96" preload="metadata">
+                        <source src="{{ url_for('recurso.descargar', ruta_relativa=r.archivo_video) }}" type="video/mp4">
+                    </video>
+                    {% endif %}
                 </div>
                 {% endfor %}
 

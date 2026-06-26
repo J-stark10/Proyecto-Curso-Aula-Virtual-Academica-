@@ -156,31 +156,31 @@ with app.app_context():
 
     modulos_data = {
         curso_mate.id: [
-            ("Unidad 1 — Ecuaciones Lineales", "Resolución de ecuaciones de primer grado con una incógnita.", 1),
-            ("Unidad 2 — Funciones Cuadráticas", "Gráfica de parábolas, vértice, eje de simetría y raíces.", 2),
-            ("Unidad 3 — Geometría Plana", "Ángulos, triángulos, teorema de Pitágoras y áreas.", 3),
-            ("Unidad 4 — Estadística y Probabilidad", "Media, mediana, moda, probabilidad simple y compuesta.", 4),
-            ("Unidad 5 — Razones y Proporciones", "Regla de tres, porcentajes, repartos proporcionales.", 5),
+            ("Unidad 1 - Ecuaciones Lineales", "Resolución de ecuaciones de primer grado con una incógnita.", 1),
+            ("Unidad 2 - Funciones Cuadráticas", "Gráfica de parábolas, vértice, eje de simetría y raíces.", 2),
+            ("Unidad 3 - Geometría Plana", "Ángulos, triángulos, teorema de Pitágoras y áreas.", 3),
+            ("Unidad 4 - Estadística y Probabilidad", "Media, mediana, moda, probabilidad simple y compuesta.", 4),
+            ("Unidad 5 - Razones y Proporciones", "Regla de tres, porcentajes, repartos proporcionales.", 5),
         ],
         curso_fisica.id: [
-            ("Unidad 1 — Cinemática", "MRU, MRUV, caída libre y gráficas de movimiento.", 1),
-            ("Unidad 2 — Dinámica", "Leyes de Newton, fuerza, masa y aceleración.", 2),
-            ("Unidad 3 — Trabajo y Energía", "Trabajo mecánico, energía cinética y potencial.", 3),
+            ("Unidad 1 - Cinemática", "MRU, MRUV, caída libre y gráficas de movimiento.", 1),
+            ("Unidad 2 - Dinámica", "Leyes de Newton, fuerza, masa y aceleración.", 2),
+            ("Unidad 3 - Trabajo y Energía", "Trabajo mecánico, energía cinética y potencial.", 3),
         ],
         curso_lenguaje.id: [
-            ("Unidad 1 — Gramática y Ortografía", "Reglas ortográficas, tildación y signos de puntuación.", 1),
-            ("Unidad 2 — Redacción de Textos", "Estructura del párrafo, textos narrativos y descriptivos.", 2),
-            ("Unidad 3 — Literatura Boliviana", "Autores representativos: Alcides Arguedas, Adela Zamudio.", 3),
+            ("Unidad 1 - Gramática y Ortografía", "Reglas ortográficas, tildación y signos de puntuación.", 1),
+            ("Unidad 2 - Redacción de Textos", "Estructura del párrafo, textos narrativos y descriptivos.", 2),
+            ("Unidad 3 - Literatura Boliviana", "Autores representativos: Alcides Arguedas, Adela Zamudio.", 3),
         ],
         curso_bio.id: [
-            ("Unidad 1 — La Célula", "Estructura celular, tipos de células y organelos.", 1),
-            ("Unidad 2 — Genética Mendeliana", "Leyes de Mendel, cruces monohíbridos y árbol genealógico.", 2),
-            ("Unidad 3 — Ecosistemas Bolivianos", "Altiplano, valles, llanos y amazonía; cadenas tróficas.", 3),
+            ("Unidad 1 - La Célula", "Estructura celular, tipos de células y organelos.", 1),
+            ("Unidad 2 - Genética Mendeliana", "Leyes de Mendel, cruces monohíbridos y árbol genealógico.", 2),
+            ("Unidad 3 - Ecosistemas Bolivianos", "Altiplano, valles, llanos y amazonía; cadenas tróficas.", 3),
         ],
         curso_ingles.id: [
-            ("Unidad 1 — Basic Grammar", "Verb to be, simple present, articles and plurals.", 1),
-            ("Unidad 2 — Reading & Vocabulary", "Daily routines, school objects, family members.", 2),
-            ("Unidad 3 — Conversation", "Greetings, introductions, asking for directions.", 3),
+            ("Unidad 1 - Basic Grammar", "Verb to be, simple present, articles and plurals.", 1),
+            ("Unidad 2 - Reading & Vocabulary", "Daily routines, school objects, family members.", 2),
+            ("Unidad 3 - Conversation", "Greetings, introductions, asking for directions.", 3),
         ],
     }
 
@@ -196,26 +196,26 @@ with app.app_context():
     # ─── RECURSOS ──────────────────────────────────────────────────────
     print("Creando recursos...")
     recursos_lista = [
-        (curso_mate.id, 0, "Video — Solución de ecuaciones lineales", "enlace", "https://www.youtube.com/watch?v=ejemplo_ecuaciones"),
-        (curso_mate.id, 1, "PDF — Ejercicios de funciones cuadráticas", "enlace", "https://ejemplo.com/funciones_cuadraticas.pdf"),
-        (curso_mate.id, 2, "Video — Teorema de Pitágoras explicado", "enlace", "https://www.youtube.com/watch?v=ejemplo_pitagoras"),
-        (curso_fisica.id, 0, "PDF — Guía de ejercicios de cinemática", "enlace", "https://ejemplo.com/guia_cinematica.pdf"),
-        (curso_fisica.id, 1, "Video — Segunda ley de Newton", "enlace", "https://www.youtube.com/watch?v=ejemplo_newton"),
-        (curso_fisica.id, 2, "PDF — Problemas de trabajo y energía", "enlace", "https://ejemplo.com/trabajo_energia.pdf"),
-        (curso_lenguaje.id, 0, "PDF — Reglas de tildación", "enlace", "https://ejemplo.com/reglas_tildacion.pdf"),
-        (curso_lenguaje.id, 1, "Video — Cómo redactar un párrafo", "enlace", "https://www.youtube.com/watch?v=ejemplo_redaccion"),
-        (curso_lenguaje.id, 2, "PDF — Poesía de Adela Zamudio", "enlace", "https://ejemplo.com/adela_zamudio.pdf"),
-        (curso_bio.id, 0, "Video — La célula y sus partes", "enlace", "https://www.youtube.com/watch?v=ejemplo_celula"),
-        (curso_bio.id, 1, "PDF — Ejercicios de genética mendeliana", "enlace", "https://ejemplo.com/genetica.pdf"),
-        (curso_bio.id, 2, "PDF — Ecosistemas de Bolivia", "enlace", "https://ejemplo.com/ecosistemas_bolivia.pdf"),
-        (curso_ingles.id, 0, "PDF — Verb to be exercises", "enlace", "https://ejemplo.com/verb_to_be.pdf"),
-        (curso_ingles.id, 1, "Video — Daily routines vocabulary", "enlace", "https://www.youtube.com/watch?v=ejemplo_routines"),
-        (curso_ingles.id, 2, "PDF — Conversation practice", "enlace", "https://ejemplo.com/conversation.pdf"),
+        (curso_mate.id, 0, "Video - Solución de ecuaciones lineales", "enlace", "https://www.youtube.com/watch?v=ejemplo_ecuaciones"),
+        (curso_mate.id, 1, "PDF - Ejercicios de funciones cuadráticas", "enlace", "https://ejemplo.com/funciones_cuadraticas.pdf"),
+        (curso_mate.id, 2, "Video - Teorema de Pitágoras explicado", "enlace", "https://www.youtube.com/watch?v=ejemplo_pitagoras"),
+        (curso_fisica.id, 0, "PDF - Guía de ejercicios de cinemática", "enlace", "https://ejemplo.com/guia_cinematica.pdf"),
+        (curso_fisica.id, 1, "Video - Segunda ley de Newton", "enlace", "https://www.youtube.com/watch?v=ejemplo_newton"),
+        (curso_fisica.id, 2, "PDF - Problemas de trabajo y energía", "enlace", "https://ejemplo.com/trabajo_energia.pdf"),
+        (curso_lenguaje.id, 0, "PDF - Reglas de tildación", "enlace", "https://ejemplo.com/reglas_tildacion.pdf"),
+        (curso_lenguaje.id, 1, "Video - Cómo redactar un párrafo", "enlace", "https://www.youtube.com/watch?v=ejemplo_redaccion"),
+        (curso_lenguaje.id, 2, "PDF - Poesía de Adela Zamudio", "enlace", "https://ejemplo.com/adela_zamudio.pdf"),
+        (curso_bio.id, 0, "Video - La célula y sus partes", "enlace", "https://www.youtube.com/watch?v=ejemplo_celula"),
+        (curso_bio.id, 1, "PDF - Ejercicios de genética mendeliana", "enlace", "https://ejemplo.com/genetica.pdf"),
+        (curso_bio.id, 2, "PDF - Ecosistemas de Bolivia", "enlace", "https://ejemplo.com/ecosistemas_bolivia.pdf"),
+        (curso_ingles.id, 0, "PDF - Verb to be exercises", "enlace", "https://ejemplo.com/verb_to_be.pdf"),
+        (curso_ingles.id, 1, "Video - Daily routines vocabulary", "enlace", "https://www.youtube.com/watch?v=ejemplo_routines"),
+        (curso_ingles.id, 2, "PDF - Conversation practice", "enlace", "https://ejemplo.com/conversation.pdf"),
         # Recursos extra para Matemáticas (módulos 4 y 5)
-        (curso_mate.id, 3, "PDF — Guía de estadística básica", "enlace", "https://ejemplo.com/estadistica.pdf"),
-        (curso_mate.id, 3, "Video — Cómo calcular la media y mediana", "enlace", "https://www.youtube.com/watch?v=ejemplo_media"),
-        (curso_mate.id, 4, "PDF — Ejercicios de regla de tres", "enlace", "https://ejemplo.com/regla_tres.pdf"),
-        (curso_mate.id, 4, "Video — Repartos proporcionales", "enlace", "https://www.youtube.com/watch?v=ejemplo_repartos"),
+        (curso_mate.id, 3, "PDF - Guía de estadística básica", "enlace", "https://ejemplo.com/estadistica.pdf"),
+        (curso_mate.id, 3, "Video - Cómo calcular la media y mediana", "enlace", "https://www.youtube.com/watch?v=ejemplo_media"),
+        (curso_mate.id, 4, "PDF - Ejercicios de regla de tres", "enlace", "https://ejemplo.com/regla_tres.pdf"),
+        (curso_mate.id, 4, "Video - Repartos proporcionales", "enlace", "https://www.youtube.com/watch?v=ejemplo_repartos"),
     ]
     for curso_id, mod_idx, titulo, tipo, url in recursos_lista:
         r = Recurso(
@@ -237,7 +237,7 @@ with app.app_context():
         # ── Matemáticas 4to (T1) ──
         (curso_mate.id, 0, "Ejercicios de ecuaciones lineales", "Resuelve 12 ecuaciones de primer grado. Entrega escaneada en PDF.",
          t1_inicio + timedelta(days=5), 20, 1),
-        (curso_mate.id, 0, "Prueba escrita — Ecuaciones", "Evaluación en clase sobre despeje de ecuaciones.",
+        (curso_mate.id, 0, "Prueba escrita - Ecuaciones", "Evaluación en clase sobre despeje de ecuaciones.",
          t1_inicio + timedelta(days=12), 25, 1),
         (curso_mate.id, 1, "Gráfica de funciones cuadráticas", "Grafica 5 funciones indicando vértice y raíces.",
          t1_inicio + timedelta(days=30), 20, 1),
@@ -415,15 +415,21 @@ with app.app_context():
 
             # Forzar notas bajas en Matemáticas para demostrar colores
             if curso_id == curso_mate.id:
-                if est_idx == 3:  # María Choque — bajo rendimiento
+                if est_idx == 3:  # María Choque - bajo rendimiento
                     nota = round(tarea.puntaje_maximo * (0.15 + (tarea.id % 15) / 100), 1)
-                elif est_idx == 6:  # Luis Quispe — rendimiento irregular
+                elif est_idx == 6:  # Luis Quispe - rendimiento irregular
                     nota = round(tarea.puntaje_maximo * (0.30 + (tarea.id * 3 % 25) / 100), 1)
-                elif est_idx == 8:  # Pedro Yujra — bajo en T1, mejora después
+                elif est_idx == 8:  # Pedro Yujra - bajo en T1, mejora después
                     nota = round(tarea.puntaje_maximo * (0.25 + (tarea.id % 20) / 100), 1)
 
             retro = retro_algunas[retro_idx % len(retro_algunas)]
             retro_idx += 1
+
+            # Entregas tardías dispersas (~20% de las entregas)
+            semilla = est_idx * 13 + tarea.id * 7
+            f_entrega = tarea.fecha_limite
+            if semilla % 5 == 0:
+                f_entrega = tarea.fecha_limite + timedelta(hours=6 + (semilla % 72))
 
             entrega = Entrega(
                 tarea_id=tarea.id,
@@ -431,6 +437,7 @@ with app.app_context():
                 archivo=f"entregas/tarea_{tarea.id}_{est.email.split('@')[0]}.pdf",
                 comentario=retro if retro_idx % 3 == 0 else None,
                 estado="revisado",
+                fecha_entrega=f_entrega,
             )
             db.session.add(entrega)
             db.session.flush()
@@ -454,11 +461,11 @@ with app.app_context():
          "Bienvenidos al curso de Matemáticas. Este trimestre veremos ecuaciones lineales y funciones cuadráticas."),
         (curso_mate.id, "Recordatorio: Prueba de ecuaciones",
          "La prueba escrita de ecuaciones lineales será el viernes. Estudien los ejercicios de la guía."),
-        (curso_fisica.id, "Inicio de clases — Física 5to",
+        (curso_fisica.id, "Inicio de clases - Física 5to",
          "Bienvenidos al curso de Física. Empezaremos con cinemática."),
         (curso_fisica.id, "Resultados laboratorio virtual",
          "Las notas del laboratorio de caída libre ya están disponibles en el sistema."),
-        (curso_lenguaje.id, "Bienvenida — Lenguaje 3ro",
+        (curso_lenguaje.id, "Bienvenida - Lenguaje 3ro",
          "Este trimestre trabajaremos ortografía y redacción."),
         (curso_lenguaje.id, "Concurso de ortografía",
          "El viernes 15 tendremos el concurso inter-aulas de ortografía. ¡Prepárense!"),

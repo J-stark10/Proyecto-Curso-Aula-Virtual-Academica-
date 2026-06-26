@@ -34,7 +34,7 @@ def crear(modulo_id):
 
         # IMPORTANTE: los inputs de PDF y video usan nombres DISTINTOS
         # (archivo_pdf / archivo_video) para evitar que uno sobrescriba al otro
-        # al usar request.files.get() — bug ya corregido en este proyecto.
+        # al usar request.files.get() - bug ya corregido en este proyecto.
         ruta_pdf = None
         ruta_video = None
 
