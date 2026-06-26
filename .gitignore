@@ -3,3 +3,4 @@ __pycache__/
 *.pyc
 instance/
 .env
+prompt_simplificacion_aula_virtual.md

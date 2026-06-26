@@ -83,8 +83,8 @@ def create_app():
         from app.modulos.models import Modulo
         from app.recursos.models import Recurso
         from app.tareas.models import Tarea
-        from app.entregas.models import Entrega, AutoevaluacionConfig, RespuestaAutoevaluacion
-        from app.calificaciones.models import Calificacion, HistorialCalificacion
+        from app.entregas.models import Entrega
+        from app.calificaciones.models import Calificacion
         from app.anuncios.models import Anuncio
 
         db.create_all()

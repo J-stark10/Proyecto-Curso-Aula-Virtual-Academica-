@@ -5,9 +5,6 @@ from app.app import db
 from app.usuarios.models import Usuario
 from app.categoria.models import Categoria
 from app.cursos.models import Curso, Inscripcion, generar_codigo_unico
-from app.tareas.models import Tarea
-from app.modulos.models import Modulo
-from app.entregas.models import Entrega, AutoevaluacionConfig, RespuestaAutoevaluacion
 from app.utils import registrar_log, role_required
 
 bp_curso = Blueprint("curso", __name__, template_folder="templates")
@@ -19,10 +16,14 @@ def _cursos_visibles_para(usuario):
         return Curso.query
     if usuario.rol == "docente":
         return Curso.query.filter_by(docente_id=usuario.id)
-    # estudiante: solo cursos donde está inscrito
     return (
-        Curso.query.join(Inscripcion)
-        .filter(Inscripcion.estudiante_id == usuario.id)
+        Curso.query.filter(
+            Curso.id.in_(
+                db.session.query(Inscripcion.curso_id).filter(
+                    Inscripcion.estudiante_id == usuario.id
+                )
+            )
+        )
     )
 
 
@@ -126,23 +127,8 @@ def detalle(id):
         flash("No tienes acceso a este curso.", "danger")
         return redirect(url_for("curso.listar"))
 
-    autoevaluaciones = {}
-    for t in [1, 2, 3]:
-        config = AutoevaluacionConfig.query.filter_by(curso_id=id, trimestre=t).first()
-        if config:
-            respuesta = None
-            if current_user.rol == "estudiante":
-                respuesta = RespuestaAutoevaluacion.query.filter_by(
-                    config_id=config.id, estudiante_id=current_user.id
-                ).first()
-            autoevaluaciones[t] = {"config": config, "respuesta": respuesta}
-        else:
-            autoevaluaciones[t] = None
+    return render_template("cursos/detalle.html", curso=curso)
 
-    return render_template("cursos/detalle.html", curso=curso, autoevaluaciones=autoevaluaciones)
-
-
-# --- Inscripción de estudiantes mediante código ---
 
 @bp_curso.route("/unirse", methods=["GET", "POST"])
 @login_required
@@ -179,165 +165,6 @@ def unirse():
         return redirect(url_for("curso.listar"))
 
     return render_template("cursos/unirse.html")
-
-
-# --- Gestión de inscripciones (solo docentes/admin, muestra el código) ---
-
-@bp_curso.route("/<int:curso_id>/autoevaluacion/activar", methods=["POST"])
-@login_required
-@role_required("admin", "docente")
-def activar_autoevaluacion(curso_id):
-    curso = Curso.query.get(curso_id)
-    if current_user.rol == "docente" and curso.docente_id != current_user.id:
-        flash("No puedes gestionar este curso.", "danger")
-        return redirect(url_for("curso.listar"))
-
-    trimestre = request.form.get("trimestre", type=int) or 1
-
-    config = AutoevaluacionConfig.query.filter_by(curso_id=curso_id, trimestre=trimestre).first()
-    if config:
-        if config.activo:
-            flash(f"La autoevaluación del {trimestre}° Trimestre ya está activa.", "warning")
-        else:
-            config.activo = True
-            db.session.commit()
-            registrar_log("Activar Autoevaluación", f"Autoevaluación T{trimestre} activada en curso '{curso.nombre}'")
-            flash(f"Autoevaluación del {trimestre}° Trimestre activada.", "success")
-    else:
-        config = AutoevaluacionConfig(curso_id=curso_id, trimestre=trimestre, activo=True)
-        db.session.add(config)
-        db.session.commit()
-        registrar_log("Activar Autoevaluación", f"Autoevaluación T{trimestre} activada en curso '{curso.nombre}'")
-        flash(f"Autoevaluación del {trimestre}° Trimestre activada exitosamente.", "success")
-
-    return redirect(url_for("curso.detalle", id=curso_id))
-
-
-@bp_curso.route("/<int:curso_id>/autoevaluacion/desactivar", methods=["POST"])
-@login_required
-@role_required("admin", "docente")
-def desactivar_autoevaluacion(curso_id):
-    curso = Curso.query.get(curso_id)
-    if current_user.rol == "docente" and curso.docente_id != current_user.id:
-        flash("No puedes gestionar este curso.", "danger")
-        return redirect(url_for("curso.listar"))
-
-    trimestre = request.form.get("trimestre", type=int) or 1
-
-    config = AutoevaluacionConfig.query.filter_by(curso_id=curso_id, trimestre=trimestre).first()
-    if config:
-        config.activo = False
-        db.session.commit()
-        registrar_log("Desactivar Autoevaluación", f"Autoevaluación T{trimestre} desactivada en curso '{curso.nombre}'")
-        flash(f"Autoevaluación del {trimestre}° Trimestre desactivada. Los estudiantes ya no pueden modificarla.", "success")
-    else:
-        flash("No hay autoevaluación activa para este trimestre.", "warning")
-
-    return redirect(url_for("curso.detalle", id=curso_id))
-
-
-@bp_curso.route("/<int:curso_id>/autoevaluacion/<int:trimestre>", methods=["GET", "POST"])
-@login_required
-@role_required("estudiante")
-def autoevaluacion_form(curso_id, trimestre):
-    curso = Curso.query.get(curso_id)
-    inscrito = Inscripcion.query.filter_by(curso_id=curso_id, estudiante_id=current_user.id).first()
-    if not inscrito:
-        flash("No estás inscrito en este curso.", "danger")
-        return redirect(url_for("curso.listar"))
-
-    config = AutoevaluacionConfig.query.filter_by(curso_id=curso_id, trimestre=trimestre).first()
-    if not config or not config.activo:
-        flash("La autoevaluación no está activa para este trimestre.", "warning")
-        return redirect(url_for("curso.detalle", id=curso_id))
-
-    respuesta = RespuestaAutoevaluacion.query.filter_by(config_id=config.id, estudiante_id=current_user.id).first()
-
-    if request.method == "POST":
-        puntaje = request.form.get("puntaje_autoevaluacion", type=float)
-        if puntaje is None or puntaje < 0 or puntaje > 5:
-            flash("El puntaje debe estar entre 0 y 5.", "danger")
-            return redirect(url_for("curso.autoevaluacion_form", curso_id=curso_id, trimestre=trimestre))
-
-        if respuesta:
-            respuesta.puntaje = puntaje
-            respuesta.fecha_respuesta = datetime.utcnow()
-        else:
-            respuesta = RespuestaAutoevaluacion(
-                config_id=config.id,
-                estudiante_id=current_user.id,
-                puntaje=puntaje,
-                fecha_respuesta=datetime.utcnow(),
-            )
-            db.session.add(respuesta)
-        db.session.commit()
-        registrar_log("Autoevaluación", f"Estudiante autoevaluado en curso '{curso.nombre}' T{trimestre}: {puntaje}/5")
-        flash("Tu autoevaluación fue guardada exitosamente.", "success")
-        return redirect(url_for("curso.detalle", id=curso_id))
-
-    return render_template("entregas/autoevaluacion.html", curso=curso, trimestre=trimestre, respuesta=respuesta)
-
-
-@bp_curso.route("/<int:curso_id>/autoevaluaciones/<int:trimestre>")
-@login_required
-@role_required("admin", "docente")
-def ver_autoevaluaciones(curso_id, trimestre):
-    curso = Curso.query.get(curso_id)
-    if current_user.rol == "docente" and curso.docente_id != current_user.id:
-        flash("No puedes ver las autoevaluaciones de un curso que no te pertenece.", "danger")
-        return redirect(url_for("curso.listar"))
-
-    config = AutoevaluacionConfig.query.filter_by(curso_id=curso_id, trimestre=trimestre).first()
-    respuestas = []
-    if config:
-        respuestas = RespuestaAutoevaluacion.query.filter_by(config_id=config.id).all()
-
-    pendientes = []
-    if config:
-        respondidos_ids = {r.estudiante_id for r in respuestas}
-        pendientes = [
-            insc.estudiante
-            for insc in curso.inscripciones
-            if insc.estudiante_id not in respondidos_ids
-        ]
-
-    return render_template(
-        "cursos/autoevaluaciones.html",
-        curso=curso, trimestre=trimestre, config=config,
-        respuestas=respuestas, pendientes=pendientes,
-    )
-
-
-@bp_curso.route("/autoevaluacion/calificar/<int:respuesta_id>", methods=["GET", "POST"])
-@login_required
-@role_required("admin", "docente")
-def calificar_autoevaluacion(respuesta_id):
-    respuesta = RespuestaAutoevaluacion.query.get(respuesta_id)
-    config = respuesta.config
-    curso = config.curso
-
-    if current_user.rol == "docente" and curso.docente_id != current_user.id:
-        flash("No puedes calificar autoevaluaciones de un curso que no te pertenece.", "danger")
-        return redirect(url_for("curso.listar"))
-
-    if request.method == "POST":
-        nota = request.form.get("nota_final", type=float)
-        retro = request.form.get("retroalimentacion", "").strip()
-
-        if nota is None or nota < 0 or nota > 5:
-            flash(f"La nota debe estar entre 0 y 5.", "danger")
-            return redirect(url_for("curso.calificar_autoevaluacion", respuesta_id=respuesta_id))
-
-        respuesta.nota_final = nota
-        respuesta.retroalimentacion = retro
-        respuesta.docente_id = current_user.id
-        respuesta.fecha_calificacion = datetime.utcnow()
-        db.session.commit()
-        registrar_log("Calificar Autoevaluación", f"Autoevaluación de {respuesta.estudiante.nombre_completo} calificada: {nota}/5")
-        flash("Calificación guardada exitosamente.", "success")
-        return redirect(url_for("curso.ver_autoevaluaciones", curso_id=curso.id, trimestre=config.trimestre))
-
-    return render_template("cursos/calificar_autoevaluacion.html", respuesta=respuesta, config=config, curso=curso)
 
 
 @bp_curso.route("/inscripciones/<int:id>")

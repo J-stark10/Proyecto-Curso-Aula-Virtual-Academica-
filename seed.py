@@ -6,7 +6,7 @@ from app.cursos.models import Curso, Inscripcion
 from app.modulos.models import Modulo
 from app.recursos.models import Recurso
 from app.tareas.models import Tarea
-from app.entregas.models import Entrega, AutoevaluacionConfig, RespuestaAutoevaluacion
+from app.entregas.models import Entrega
 from app.calificaciones.models import Calificacion
 from app.anuncios.models import Anuncio
 
@@ -135,7 +135,7 @@ with app.app_context():
     db.session.add_all(cursos)
     db.session.commit()
 
-    # ─── INSCRIPCIONES (10+ estudiantes por curso) ─────────────────────
+    # ─── INSCRIPCIONES ──────────────────────────────────────────────────
     print("Inscribiendo estudiantes...")
     inscripciones_plan = [
         (curso_mate.id, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]),
@@ -159,6 +159,8 @@ with app.app_context():
             ("Unidad 1 — Ecuaciones Lineales", "Resolución de ecuaciones de primer grado con una incógnita.", 1),
             ("Unidad 2 — Funciones Cuadráticas", "Gráfica de parábolas, vértice, eje de simetría y raíces.", 2),
             ("Unidad 3 — Geometría Plana", "Ángulos, triángulos, teorema de Pitágoras y áreas.", 3),
+            ("Unidad 4 — Estadística y Probabilidad", "Media, mediana, moda, probabilidad simple y compuesta.", 4),
+            ("Unidad 5 — Razones y Proporciones", "Regla de tres, porcentajes, repartos proporcionales.", 5),
         ],
         curso_fisica.id: [
             ("Unidad 1 — Cinemática", "MRU, MRUV, caída libre y gráficas de movimiento.", 1),
@@ -209,6 +211,11 @@ with app.app_context():
         (curso_ingles.id, 0, "PDF — Verb to be exercises", "enlace", "https://ejemplo.com/verb_to_be.pdf"),
         (curso_ingles.id, 1, "Video — Daily routines vocabulary", "enlace", "https://www.youtube.com/watch?v=ejemplo_routines"),
         (curso_ingles.id, 2, "PDF — Conversation practice", "enlace", "https://ejemplo.com/conversation.pdf"),
+        # Recursos extra para Matemáticas (módulos 4 y 5)
+        (curso_mate.id, 3, "PDF — Guía de estadística básica", "enlace", "https://ejemplo.com/estadistica.pdf"),
+        (curso_mate.id, 3, "Video — Cómo calcular la media y mediana", "enlace", "https://www.youtube.com/watch?v=ejemplo_media"),
+        (curso_mate.id, 4, "PDF — Ejercicios de regla de tres", "enlace", "https://ejemplo.com/regla_tres.pdf"),
+        (curso_mate.id, 4, "Video — Repartos proporcionales", "enlace", "https://www.youtube.com/watch?v=ejemplo_repartos"),
     ]
     for curso_id, mod_idx, titulo, tipo, url in recursos_lista:
         r = Recurso(
@@ -223,113 +230,126 @@ with app.app_context():
 
     t1_inicio = datetime(2026, 3, 2)
     t2_inicio = datetime(2026, 6, 1)
+    t3_inicio = datetime(2026, 9, 7)
 
-    # Formato: (curso_id, mod_idx, titulo, instrucciones, fecha_limite, puntaje, dimension, trimestre)
-    # Límites T1 por curso: ser≤10, saber≤45, hacer≤40, autoevaluacion≤5
+    # Formato: (curso_id, mod_idx, titulo, instrucciones, fecha_limite, puntaje, trimestre)
     tareas_data = [
         # ── Matemáticas 4to (T1) ──
         (curso_mate.id, 0, "Ejercicios de ecuaciones lineales", "Resuelve 12 ecuaciones de primer grado. Entrega escaneada en PDF.",
-         t1_inicio + timedelta(days=5), 20, "saber", 1),
+         t1_inicio + timedelta(days=5), 20, 1),
         (curso_mate.id, 0, "Prueba escrita — Ecuaciones", "Evaluación en clase sobre despeje de ecuaciones.",
-         t1_inicio + timedelta(days=12), 25, "saber", 1),
+         t1_inicio + timedelta(days=12), 25, 1),
         (curso_mate.id, 1, "Gráfica de funciones cuadráticas", "Grafica 5 funciones indicando vértice y raíces.",
-         t1_inicio + timedelta(days=30), 20, "hacer", 1),
+         t1_inicio + timedelta(days=30), 20, 1),
         (curso_mate.id, 1, "Cuestionario de funciones", "Responde 10 preguntas teórico-prácticas sobre funciones.",
-         t1_inicio + timedelta(days=40), 15, "hacer", 1),
+         t1_inicio + timedelta(days=40), 15, 1),
         (curso_mate.id, 0, "Participación y puntualidad", "Asistencia, participación activa y entrega puntual de trabajos.",
-         t1_inicio + timedelta(days=60), 5, "ser", 1),
-        (curso_mate.id, 1, "Responsabilidad académica", "Cumplimiento de normas, orden en cuaderno y respeto en clase.",
-         t1_inicio + timedelta(days=60), 5, "ser", 1),
+         t1_inicio + timedelta(days=60), 10, 1),
         (curso_mate.id, 2, "Práctica de geometría básica", "Resuelve 5 ejercicios de áreas y perímetros.",
-         t1_inicio + timedelta(days=50), 5, "hacer", 1),
+         t1_inicio + timedelta(days=50), 10, 1),
         # ── Física 5to (T1) ──
         (curso_fisica.id, 0, "Problemas de MRU y MRUV", "Resuelve 8 problemas de movimiento rectilíneo.",
-         t1_inicio + timedelta(days=4), 20, "hacer", 1),
+         t1_inicio + timedelta(days=4), 20, 1),
         (curso_fisica.id, 0, "Laboratorio virtual de caída libre", "Simulación y análisis de caída libre con datos.",
-         t1_inicio + timedelta(days=15), 15, "hacer", 1),
+         t1_inicio + timedelta(days=15), 15, 1),
         (curso_fisica.id, 1, "Ejercicios de dinámica", "Aplica las leyes de Newton a 6 situaciones.",
-         t1_inicio + timedelta(days=35), 20, "saber", 1),
+         t1_inicio + timedelta(days=35), 20, 1),
         (curso_fisica.id, 1, "Prueba de leyes de Newton", "Evaluación escrita con problemas de aplicación.",
-         t1_inicio + timedelta(days=45), 20, "saber", 1),
+         t1_inicio + timedelta(days=45), 20, 1),
         (curso_fisica.id, 0, "Disciplina en laboratorio", "Comportamiento adecuado durante prácticas de laboratorio.",
-         t1_inicio + timedelta(days=60), 5, "ser", 1),
-        (curso_fisica.id, 1, "Trabajo en equipo", "Colaboración y respeto en actividades grupales.",
-         t1_inicio + timedelta(days=60), 5, "ser", 1),
+         t1_inicio + timedelta(days=60), 10, 1),
         (curso_fisica.id, 2, "Cuestionario de conceptos físicos", "Responde 10 preguntas teóricas sobre cinemática y dinámica.",
-         t1_inicio + timedelta(days=50), 5, "saber", 1),
+         t1_inicio + timedelta(days=50), 10, 1),
         (curso_fisica.id, 0, "Experimento casero: caída libre", "Realiza un experimento con objetos en caída y registra los resultados.",
-         t1_inicio + timedelta(days=55), 5, "hacer", 1),
+         t1_inicio + timedelta(days=55), 5, 1),
         # ── Lenguaje 3ro (T1) ──
         (curso_lenguaje.id, 0, "Ejercicios de ortografía", "Corrige 20 oraciones con errores de tildación y puntuación.",
-         t1_inicio + timedelta(days=5), 15, "saber", 1),
+         t1_inicio + timedelta(days=5), 15, 1),
         (curso_lenguaje.id, 0, "Dictado calificado", "Texto de 150 palabras con reglas ortográficas.",
-         t1_inicio + timedelta(days=10), 10, "saber", 1),
+         t1_inicio + timedelta(days=10), 10, 1),
         (curso_lenguaje.id, 1, "Redacción: texto narrativo", "Escribe un cuento de 2 páginas sobre tu comunidad.",
-         t1_inicio + timedelta(days=25), 25, "hacer", 1),
+         t1_inicio + timedelta(days=25), 25, 1),
         (curso_lenguaje.id, 1, "Análisis de texto descriptivo", "Identifica recursos literarios en un texto dado.",
-         t1_inicio + timedelta(days=38), 20, "saber", 1),
+         t1_inicio + timedelta(days=38), 20, 1),
         (curso_lenguaje.id, 0, "Participación en clase", "Intervenciones pertinentes y respeto a la opinión de los compañeros.",
-         t1_inicio + timedelta(days=60), 5, "ser", 1),
-        (curso_lenguaje.id, 0, "Orden y respeto en clase", "Mantener el orden, escuchar activamente y respetar los turnos de palabra.",
-         t1_inicio + timedelta(days=60), 5, "ser", 1),
+         t1_inicio + timedelta(days=60), 5, 1),
+        (curso_lenguaje.id, 0, "Orden y respeto en clase", "Mantener el orden, escuchar activamente y respetar los turnos.",
+         t1_inicio + timedelta(days=60), 5, 1),
         (curso_lenguaje.id, 2, "Ejercicios de comprensión lectora", "Lee un texto y responde 10 preguntas de comprensión.",
-         t1_inicio + timedelta(days=48), 10, "hacer", 1),
+         t1_inicio + timedelta(days=48), 10, 1),
         (curso_lenguaje.id, 2, "Exposición oral: mi autor favorito", "Prepara una exposición de 5 minutos sobre un autor boliviano.",
-         t1_inicio + timedelta(days=58), 5, "hacer", 1),
+         t1_inicio + timedelta(days=58), 10, 1),
         # ── Biología 4to (T1) ──
         (curso_bio.id, 0, "Maqueta de la célula", "Elabora una maqueta 3D de una célula vegetal.",
-         t1_inicio + timedelta(days=8), 20, "hacer", 1),
+         t1_inicio + timedelta(days=8), 20, 1),
         (curso_bio.id, 0, "Cuestionario de biología celular", "Responde 15 preguntas sobre organelos y funciones.",
-         t1_inicio + timedelta(days=15), 20, "saber", 1),
+         t1_inicio + timedelta(days=15), 20, 1),
         (curso_bio.id, 1, "Cruces genéticos", "Resuelve 5 cruces monohíbridos con cuadros de Punnett.",
-         t1_inicio + timedelta(days=30), 20, "hacer", 1),
+         t1_inicio + timedelta(days=30), 20, 1),
         (curso_bio.id, 1, "Prueba de genética", "Evaluación escrita con problemas de herencia.",
-         t1_inicio + timedelta(days=42), 20, "saber", 1),
-        (curso_bio.id, 0, "Cuidado del material", "Responsabilidad en el uso de materiales de laboratorio y maquetas.",
-         t1_inicio + timedelta(days=60), 5, "ser", 1),
+         t1_inicio + timedelta(days=42), 20, 1),
+        (curso_bio.id, 0, "Cuidado del material", "Responsabilidad en el uso de materiales de laboratorio.",
+         t1_inicio + timedelta(days=60), 5, 1),
         (curso_bio.id, 1, "Respeto por la naturaleza", "Actitud positiva hacia el medio ambiente y los ecosistemas.",
-         t1_inicio + timedelta(days=60), 5, "ser", 1),
-        (curso_bio.id, 2, "Mapa conceptual de ecosistemas", "Elabora un mapa conceptual con los ecosistemas de Bolivia.",
-         t1_inicio + timedelta(days=52), 5, "saber", 1),
+         t1_inicio + timedelta(days=60), 5, 1),
+        (curso_bio.id, 2, "Mapa conceptual de ecosistemas", "Elabora un mapa con los ecosistemas de Bolivia.",
+         t1_inicio + timedelta(days=52), 10, 1),
         # ── Inglés 3ro (T1) ──
         (curso_ingles.id, 0, "Verb to be worksheet", "Complete 30 sentences with am / is / are.",
-         t1_inicio + timedelta(days=5), 15, "saber", 1),
+         t1_inicio + timedelta(days=5), 15, 1),
         (curso_ingles.id, 0, "Simple present exercises", "Conjugate 20 verbs in simple present tense.",
-         t1_inicio + timedelta(days=15), 15, "saber", 1),
+         t1_inicio + timedelta(days=15), 15, 1),
         (curso_ingles.id, 1, "My daily routine", "Write a paragraph describing your daily routine.",
-         t1_inicio + timedelta(days=28), 20, "hacer", 1),
+         t1_inicio + timedelta(days=28), 20, 1),
         (curso_ingles.id, 1, "Vocabulary quiz", "Match 30 words with their meanings.",
-         t1_inicio + timedelta(days=40), 10, "saber", 1),
-        (curso_ingles.id, 0, "Effort and participation", "Actitud positiva, participación activa y uso del inglés en clase.",
-         t1_inicio + timedelta(days=60), 5, "ser", 1),
+         t1_inicio + timedelta(days=40), 10, 1),
+        (curso_ingles.id, 0, "Effort and participation", "Actitud positiva y participación activa en clase.",
+         t1_inicio + timedelta(days=60), 5, 1),
         (curso_ingles.id, 1, "Responsibility", "Entrega puntual de tareas, orden en el cuaderno y respeto.",
-         t1_inicio + timedelta(days=60), 5, "ser", 1),
+         t1_inicio + timedelta(days=60), 5, 1),
         (curso_ingles.id, 2, "Reading comprehension", "Read a short text and answer 5 questions.",
-         t1_inicio + timedelta(days=48), 5, "saber", 1),
+         t1_inicio + timedelta(days=48), 10, 1),
         (curso_ingles.id, 2, "Listening practice", "Listen to an audio and complete the exercises.",
-         t1_inicio + timedelta(days=52), 10, "hacer", 1),
-        (curso_ingles.id, 2, "Write about your family", "Write a short paragraph describing your family members.",
-         t1_inicio + timedelta(days=58), 10, "hacer", 1),
-        # ── Tareas T2 (algunas) ──
+         t1_inicio + timedelta(days=52), 10, 1),
+        (curso_ingles.id, 2, "Write about your family", "Describe your family members in a short paragraph.",
+         t1_inicio + timedelta(days=58), 10, 1),
+        # ── Tareas T2 (completas para Matemáticas) ──
         (curso_mate.id, 2, "Problemas de geometría", "Resuelve 8 problemas con teorema de Pitágoras.",
-         t2_inicio + timedelta(days=5), 20, "hacer", 2),
+         t2_inicio + timedelta(days=5), 20, 2),
+        (curso_mate.id, 3, "Ejercicios de estadística", "Calcula media, mediana y moda de 3 conjuntos de datos.",
+         t2_inicio + timedelta(days=12), 25, 2),
+        (curso_mate.id, 1, "Examen funciones avanzadas", "Evaluación escrita sobre trasformaciones de funciones cuadráticas.",
+         t2_inicio + timedelta(days=20), 25, 2),
+        (curso_mate.id, 4, "Problemas de proporciones", "Resuelve 6 problemas de regla de tres y porcentajes.",
+         t2_inicio + timedelta(days=28), 20, 2),
+        (curso_mate.id, 0, "Laboratorio ecuaciones avanzadas", "Resuelve sistemas de ecuaciones 2x2 por sustitución e igualación.",
+         t2_inicio + timedelta(days=35), 10, 2),
+        # ── Tareas T3 (completas solo para Matemáticas) ──
+        (curso_mate.id, 3, "Proyecto final de estadística", "Encuesta en el curso, tabulación, gráficos y conclusiones.",
+         t3_inicio + timedelta(days=10), 30, 3),
+        (curso_mate.id, 4, "Taller de proporciones", "Resuelve 10 problemas de repartos proporcionales y porcentajes.",
+         t3_inicio + timedelta(days=18), 20, 3),
+        (curso_mate.id, 2, "Examen de geometría analítica", "Coordenadas, distancia entre puntos y pendiente de rectas.",
+         t3_inicio + timedelta(days=25), 25, 3),
+        (curso_mate.id, 0, "Prueba final ecuaciones", "Evaluación final con ecuaciones lineales, cuadráticas y sistemas 2x2.",
+         t3_inicio + timedelta(days=32), 25, 3),
+        # ── Tareas T2 (1 por curso para los demás) ──
         (curso_fisica.id, 2, "Problemas de trabajo y energía", "Resuelve 6 problemas de conservación de energía.",
-         t2_inicio + timedelta(days=3), 20, "hacer", 2),
+         t2_inicio + timedelta(days=3), 20, 2),
         (curso_lenguaje.id, 2, "Ensayo: literatura boliviana", "Investiga y escribe sobre un autor boliviano.",
-         t2_inicio + timedelta(days=7), 25, "hacer", 2),
+         t2_inicio + timedelta(days=7), 25, 2),
         (curso_bio.id, 2, "Mapa de ecosistemas", "Dibuja y describe 3 ecosistemas de Bolivia.",
-         t2_inicio + timedelta(days=4), 20, "hacer", 2),
+         t2_inicio + timedelta(days=4), 20, 2),
         (curso_ingles.id, 2, "Conversation video", "Record a 2-minute conversation introducing yourself.",
-         t2_inicio + timedelta(days=6), 20, "hacer", 2),
+         t2_inicio + timedelta(days=6), 20, 2),
     ]
 
-    # Publicación escalonada: 3-7 días hábiles antes del cierre
     def fecha_pub(fecha_limite, offset_semilla):
         dias_antes = 3 + (offset_semilla % 5)
         return fecha_limite - timedelta(days=dias_antes)
 
     tareas_creadas = []
-    for i, (curso_id, mod_idx, titulo, instr, f_lim, puntaje, dim, trim) in enumerate(tareas_data):
+    for i, (curso_id, mod_idx, titulo, instr, f_lim, puntaje, trim) in enumerate(tareas_data):
         t = Tarea(
             modulo_id=modulos[curso_id][mod_idx].id,
             titulo=titulo,
@@ -338,14 +358,15 @@ with app.app_context():
             fecha_limite=f_lim,
             puntaje_maximo=puntaje,
             trimestre=trim,
-            dimension=dim,
         )
         db.session.add(t)
         tareas_creadas.append((curso_id, mod_idx, t, trim))
     db.session.commit()
 
-    # ─── ENTREGAS Y CALIFICACIONES (Trimestre 1 completo) ──────────────
-    print("Creando entregas y calificaciones del primer trimestre...")
+    # ─── ENTREGAS Y CALIFICACIONES ────────────────────────────────
+    print("Creando entregas y calificaciones...")
+    print("  Trimestre 1: todos los cursos")
+    print("  Trimestres 2 y 3: solo Matemáticas - 4to A")
 
     def generar_nota(seed, puntaje_max):
         base = [38, 42, 30, 45, 35, 40, 28, 37, 43, 33, 39, 41, 29, 44, 34, 36, 31, 46, 27, 32, 47, 26, 48, 25, 38]
@@ -385,12 +406,22 @@ with app.app_context():
 
     entrega_count = 0
     for curso_id, mod_idx, tarea, trim in tareas_creadas:
-        if trim != 1:
+        if trim != 1 and curso_id != curso_mate.id:
             continue
         indices = curso_estudiantes.get(curso_id, [])
         for est_idx in indices:
             est = estudiantes[est_idx]
             nota = generar_nota(est_idx * 7 + tarea.id, tarea.puntaje_maximo)
+
+            # Forzar notas bajas en Matemáticas para demostrar colores
+            if curso_id == curso_mate.id:
+                if est_idx == 3:  # María Choque — bajo rendimiento
+                    nota = round(tarea.puntaje_maximo * (0.15 + (tarea.id % 15) / 100), 1)
+                elif est_idx == 6:  # Luis Quispe — rendimiento irregular
+                    nota = round(tarea.puntaje_maximo * (0.30 + (tarea.id * 3 % 25) / 100), 1)
+                elif est_idx == 8:  # Pedro Yujra — bajo en T1, mejora después
+                    nota = round(tarea.puntaje_maximo * (0.25 + (tarea.id % 20) / 100), 1)
+
             retro = retro_algunas[retro_idx % len(retro_algunas)]
             retro_idx += 1
 
@@ -416,51 +447,19 @@ with app.app_context():
     db.session.commit()
     print(f"  {entrega_count} entregas calificadas creadas.")
 
-    # ─── AUTOEVALUACIONES (Trimestre 1) ────────────────────────────────
-    print("Creando autoevaluaciones del primer trimestre...")
-    autoev_count = 0
-    for curso_id in [c.id for c in cursos]:
-        config = AutoevaluacionConfig(curso_id=curso_id, trimestre=1, activo=True)
-        db.session.add(config)
-        db.session.flush()
-
-        indices = curso_estudiantes.get(curso_id, [])
-        for est_idx in indices:
-            est = estudiantes[est_idx]
-            puntaje = generar_nota(est_idx * 17 + curso_id, 5)
-            nota_final = generar_nota(est_idx * 19 + curso_id, 5)
-            retro = retro_algunas[retro_idx % len(retro_algunas)]
-            retro_idx += 1
-
-            respuesta = RespuestaAutoevaluacion(
-                config_id=config.id,
-                estudiante_id=est.id,
-                puntaje=puntaje,
-                fecha_respuesta=t1_inicio + timedelta(days=60 + (est_idx % 5)),
-                nota_final=nota_final,
-                retroalimentacion=retro,
-                docente_id=curso_docente[curso_id],
-                fecha_calificacion=t1_inicio + timedelta(days=63),
-            )
-            db.session.add(respuesta)
-            autoev_count += 1
-
-    db.session.commit()
-    print(f"  {autoev_count} respuestas de autoevaluación creadas.")
-
     # ─── ANUNCIOS ──────────────────────────────────────────────────────
     print("Creando anuncios...")
     anuncios_data = [
         (curso_mate.id, "¡Bienvenidos a Matemáticas 4to!",
-         "Bienvenidos al curso de Matemáticas. Este trimestre veremos ecuaciones lineales y funciones cuadráticas. Revisen el material de la Unidad 1."),
+         "Bienvenidos al curso de Matemáticas. Este trimestre veremos ecuaciones lineales y funciones cuadráticas."),
         (curso_mate.id, "Recordatorio: Prueba de ecuaciones",
          "La prueba escrita de ecuaciones lineales será el viernes. Estudien los ejercicios de la guía."),
         (curso_fisica.id, "Inicio de clases — Física 5to",
-         "Bienvenidos al curso de Física. Empezaremos con cinemática. Traigan su cuaderno de laboratorio."),
+         "Bienvenidos al curso de Física. Empezaremos con cinemática."),
         (curso_fisica.id, "Resultados laboratorio virtual",
          "Las notas del laboratorio de caída libre ya están disponibles en el sistema."),
         (curso_lenguaje.id, "Bienvenida — Lenguaje 3ro",
-         "Este trimestre trabajaremos ortografía y redacción. La falta de tildes en las evaluaciones descontará puntos."),
+         "Este trimestre trabajaremos ortografía y redacción."),
         (curso_lenguaje.id, "Concurso de ortografía",
          "El viernes 15 tendremos el concurso inter-aulas de ortografía. ¡Prepárense!"),
         (curso_bio.id, "Inicio de Biología 4to",
@@ -468,17 +467,20 @@ with app.app_context():
         (curso_bio.id, "Material para genética",
          "Traer cuadros de Punnett impresos para la próxima clase de genética."),
         (curso_ingles.id, "Welcome to English 3rd Grade",
-         "This trimester we will study basic grammar and vocabulary. Bring your dictionary."),
+         "This trimester we will study basic grammar and vocabulary."),
         (curso_ingles.id, "Conversation video deadline",
          "Record your conversation video and submit it before the deadline."),
     ]
+    anuncio_count = 0
     for curso_id, titulo, contenido in anuncios_data:
         db.session.add(Anuncio(curso_id=curso_id, titulo=titulo, contenido=contenido))
+        anuncio_count += 1
     db.session.commit()
 
     # ─── CREDENCIALES ──────────────────────────────────────────────────
     total_tareas_t1 = sum(1 for _, _, _, t in tareas_creadas if t == 1)
     total_tareas_t2 = sum(1 for _, _, _, t in tareas_creadas if t == 2)
+    total_tareas_t3 = sum(1 for _, _, _, t in tareas_creadas if t == 3)
     print("\n¡Datos de prueba creados exitosamente!")
     print("=" * 55)
     print("Credenciales de acceso:")
@@ -489,7 +491,8 @@ with app.app_context():
     print(f"  Todos los estudiantes: XXXXXX@colegio.bo / estudiante123")
     print("=" * 55)
     print(f"  {len(estudiantes)} estudiantes · {len(cursos)} cursos")
-    print(f"  {total_tareas_t1} tareas T1 · {total_tareas_t2} tareas T2")
-    print(f"  {entrega_count} entregas calificadas en el primer trimestre")
-    print(f"  Dimensiones: ser(10) + saber(45) + hacer(40) + autoevaluacion(5) por curso")
+    print(f"  Tareas: {total_tareas_t1} T1 · {total_tareas_t2} T2 · {total_tareas_t3} T3")
+    print(f"  {entrega_count} entregas calificadas")
+    print(f"  Curso completo (T1+T2+T3): Matemáticas - 4to A")
+    print(f"  {anuncio_count} anuncios")
     print("=" * 55)

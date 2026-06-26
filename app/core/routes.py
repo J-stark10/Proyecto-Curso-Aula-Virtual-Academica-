@@ -127,12 +127,12 @@ def _dashboard_estudiante():
         t for t in todas_tareas if t.id not in entregadas_ids and t.fecha_limite < ahora
     ]
 
-    promedio_notas = (
-        db.session.query(func.avg(Calificacion.nota))
-        .join(Entrega)
-        .filter(Entrega.estudiante_id == current_user.id)
-        .scalar()
-    )
+    promedio_notas = 0
+    if entregas_propias:
+        entrega_ids = [e.id for e in entregas_propias]
+        calificaciones = Calificacion.query.filter(Calificacion.entrega_id.in_(entrega_ids)).all()
+        if calificaciones:
+            promedio_notas = round(sum(c.nota for c in calificaciones) / len(calificaciones), 1)
 
     anuncios_recientes = (
         Anuncio.query.filter(Anuncio.curso_id.in_(curso_ids))
