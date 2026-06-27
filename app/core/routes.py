@@ -151,5 +151,18 @@ def _dashboard_estudiante():
         anuncios_recientes=anuncios_recientes,
     )
 
+@bp_core.route("/bitacora")
+@login_required
+def log_actividad():
+    from app.usuarios.models import LogActividad
 
+    logs = (
+        LogActividad.query
+        .order_by(LogActividad.fecha.desc())
+        .all()
+    )
 
+    return render_template(
+        "core/log_actividad.html",
+        logs=logs,
+    )

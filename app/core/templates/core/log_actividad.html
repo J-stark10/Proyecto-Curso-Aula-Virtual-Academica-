@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Bitácora de Actividad{% endblock %}
+{% block content %}
+<div class="space-y-6">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <a href="{{ url_for('core.index') }}"
+               class="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-700/60 hover:bg-gray-700 border border-gray-600/40 text-gray-400 hover:text-white transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </a>
+            <div>
+                <h2 class="text-2xl font-extrabold text-white">Actividad</h2>
+                <p class="text-sm text-gray-400 mt-0.5">Registro completo de acciones del sistema</p>
+            </div>
+        </div>
+        <span class="bg-gray-700/60 border border-gray-600/40 text-gray-300 text-sm font-semibold px-3 py-1.5 rounded-lg">
+            {{ logs|length }} registros
+        </span>
+    </div>
+
+    <!-- Tabla -->
+    <div class="bg-gray-800 rounded-xl border border-gray-700/60 overflow-hidden">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="border-b border-gray-700/60 bg-gray-700/20">
+                    <th class="text-left px-5 py-3 text-[11px] text-gray-500 uppercase font-bold tracking-wider">Fecha</th>
+                    <th class="text-left px-5 py-3 text-[11px] text-gray-500 uppercase font-bold tracking-wider">Usuario</th>
+                    <th class="text-left px-5 py-3 text-[11px] text-gray-500 uppercase font-bold tracking-wider">Acción</th>
+                    <th class="text-left px-5 py-3 text-[11px] text-gray-500 uppercase font-bold tracking-wider">Detalles</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-700/30">
+                {% for log in logs %}
+                <tr class="hover:bg-gray-700/20 transition">
+                    <td class="px-5 py-3 text-gray-500 whitespace-nowrap">
+                        {{ (log.fecha | bolivia).strftime('%d/%m/%Y %H:%M') }}
+                    </td>
+                    <td class="px-5 py-3">
+                        {% if log.usuario %}
+                        <span class="flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-full bg-brand-500 text-gray-900 font-extrabold text-[10px] flex items-center justify-center uppercase shrink-0">
+                                {{ log.usuario.nombre_completo[0] }}
+                            </span>
+                            <span class="text-gray-200 font-medium">{{ log.usuario.nombre_completo }}</span>
+                        </span>
+                        {% else %}
+                        <span class="text-gray-500 italic">Sistema</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-5 py-3">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold uppercase tracking-wider
+                            {% if 'eliminó' in log.accion or 'borró' in log.accion %}bg-rose-500/10 text-rose-400
+                            {% elif 'creó' in log.accion or 'registró' in log.accion %}bg-emerald-500/10 text-emerald-400
+                            {% elif 'editó' in log.accion or 'actualizó' in log.accion %}bg-amber-500/10 text-amber-400
+                            {% else %}bg-brand-500/10 text-brand-400{% endif %}">
+                            {{ log.accion }}
+                        </span>
+                    </td>
+                    <td class="px-5 py-3 text-gray-400 max-w-xs truncate">{{ log.detalles }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" class="px-5 py-12 text-center text-gray-500">
+                        <svg class="w-10 h-10 mx-auto mb-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                        No hay actividad registrada todavía.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}

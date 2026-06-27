@@ -134,33 +134,6 @@ def detalle_estudiante(curso_id, estudiante_id):
         tareas_con_nota=tareas_con_nota,
     )
 
-@bp_calificacion.route("/mis-notas")
-@login_required
-@role_required("estudiante")
-def mis_notas():
-    inscripciones = Inscripcion.query.filter_by(estudiante_id=current_user.id).all()
-
-    cursos_notas = []
-    for insc in inscripciones:
-        curso = insc.curso
-        trimestres = []
-        for t in [1, 2, 3]:
-            promedio = total_estudiante_trimestre(current_user.id, curso.id, t)
-            trimestres.append({
-                "trimestre": t,
-                "promedio": promedio,
-            })
-
-        cursos_notas.append({
-            "curso": curso,
-            "trimestres": trimestres,
-        })
-
-    return render_template(
-        "calificaciones/mis_notas.html",
-        cursos_notas=cursos_notas,
-    )
-
 @bp_calificacion.route("/curso/<int:curso_id>/mis-notas")
 @login_required
 @role_required("estudiante")
