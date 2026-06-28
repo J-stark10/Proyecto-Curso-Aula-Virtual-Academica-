@@ -130,7 +130,12 @@ def _dashboard_estudiante():
         entrega_ids = [e.id for e in entregas_propias]
         calificaciones = Calificacion.query.filter(Calificacion.entrega_id.in_(entrega_ids)).all()
         if calificaciones:
-            promedio_notas = round(sum(c.nota for c in calificaciones) / len(calificaciones), 1)
+            porcentajes = [
+                (c.nota / c.entrega.tarea.puntaje_maximo) * 100 for c in calificaciones
+                if c.entrega and c.entrega.tarea and c.entrega.tarea.puntaje_maximo > 0
+            ]
+            if porcentajes:
+                promedio_notas = round(sum(porcentajes) / len(porcentajes), 1)
 
     anuncios_recientes = (
         Anuncio.query.filter(Anuncio.curso_id.in_(curso_ids))
