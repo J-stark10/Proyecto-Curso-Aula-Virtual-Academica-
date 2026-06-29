@@ -1,7 +1,7 @@
 from datetime import datetime
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
-from app.app import db
+from app.app import db, BOLIVIA_TZ, UTC
 from app.modulos.models import Modulo
 from app.tareas.models import Tarea
 from app.utils import registrar_log, role_required
@@ -33,7 +33,8 @@ def crear(modulo_id):
             flash("El título y la fecha límite son requeridos.", "danger")
             return redirect(url_for("tarea.crear", modulo_id=modulo_id))
 
-        fecha_limite = datetime.strptime(fecha_limite_str, "%Y-%m-%dT%H:%M")
+        fecha_limite_bolivia = datetime.strptime(fecha_limite_str, "%Y-%m-%dT%H:%M")
+        fecha_limite = fecha_limite_bolivia.replace(tzinfo=BOLIVIA_TZ).astimezone(UTC).replace(tzinfo=None)
 
         nueva = Tarea(
             modulo_id=modulo_id,
@@ -71,7 +72,8 @@ def editar(id):
 
         item.titulo = titulo
         item.instrucciones = instrucciones
-        item.fecha_limite = datetime.strptime(fecha_limite_str, "%Y-%m-%dT%H:%M")
+        fecha_limite_bolivia = datetime.strptime(fecha_limite_str, "%Y-%m-%dT%H:%M")
+        item.fecha_limite = fecha_limite_bolivia.replace(tzinfo=BOLIVIA_TZ).astimezone(UTC).replace(tzinfo=None)
         item.puntaje_maximo = puntaje_maximo
         db.session.commit()
 
