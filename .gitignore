@@ -1,7 +1,6 @@
 venv/
 __pycache__/
 *.pyc
-instance/
 .env
 prompt_simplificacion_aula_virtual.md
 fix_tareas_tz.py
